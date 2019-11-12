@@ -1,0 +1,18 @@
+body{
+    background-color: #fff8eb;
+}
+
+nav input {
+    width: 45% !important;
+}
+
+#topNav {
+    font-size: 1.35em;
+    padding-left: 5em;
+    padding-right: 5em;
+    height: 2.5em;
+}
+
+main{
+    font-size: 1.1em;
+}

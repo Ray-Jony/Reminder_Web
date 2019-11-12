@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+    你的个人待办清单
+{% endblock %}
+
+{% block home-active %}
+    active
+{% endblock %}
+
+{% block css %}
+    {% static 'css/home.css/' %}
+{% endblock %}
+
+
+{% block main %}
+    <br>
+
+    {% if 提示 %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>{{ 提示 }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+    {% if 信息 %}
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <strong>{{ 信息 }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">待办事项</th>
+                <th scope="col">编辑</th>
+                <th scope="col">划掉</th>
+                <th scope="col">删除</th>
+            </tr>
+            </thead>
+            <tbody class="no-underline">
+            {% for rows in 清单 %}
+                {% if rows.finished %}
+                    <tr class="table-dark">
+                        <th class="text-dark" scope="row">{{ forloop.counter }}</th>
+                        <td class="text-dark" id="line-through">{{ rows.event }}</td>
+                        <td class="text-dark text-secondary">不可编辑</td>
+                        <td>
+                            <form action="{% url 'todolist:划掉' rows.id %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" value="未完成" name="完成状态">
+                                <button type="submit" class="btn btn-info btn-sm">撤销</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{% url 'todolist:删除' rows.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ rows.event }}</td>
+                        <td>
+                            <a class="text-info" href="{% url 'todolist:编辑' rows.id %}">
+                                <button type="submit" class="btn btn-primary btn-sm">编辑</button>
+                            </a>
+                        </td>
+                        <td>
+                            <form action="{% url 'todolist:划掉' rows.id %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" value="已完成" name="完成状态">
+                                <button type="submit" class="btn btn-primary btn-sm">划掉</button>
+                            </form>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                                    data-target="#exampleModal{{ forloop.counter }}">删除</button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleModal{{ forloop.counter }}" tabindex="-1" role="dialog"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">请确认</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            确认要删除 <strong>未完成事项：{{ rows.event }}</strong> 么？
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                取消
+                                            </button>
+                                            <form action="{% url 'todolist:删除' rows.id %}" method="POST">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-primary">
+                                                    确认
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+
+            {#            <tr>#}
+            {#                <th scope="row">2</th>#}
+            {#                <td>喝茶</td>#}
+            {#                <td><a class="text-info" href="{% url 'todolist:编辑' %}">编辑</a></td>#}
+            {#                <td><a class="text-info" href="#">划掉</a></td>#}
+            {#                <td><a class="text-info" href="#">删除</a></td>#}
+            {#            </tr>#}
+
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+
+
